@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/iTemAdd"
+        android:title="Thêm Mới" />
+    <item
+        android:id="@+id/iTemUpdate"
+        android:title="Cập Nhật" />
+    <item
+        android:id="@+id/iTemDelete"
+        android:title="Xoa" />
+</menu>

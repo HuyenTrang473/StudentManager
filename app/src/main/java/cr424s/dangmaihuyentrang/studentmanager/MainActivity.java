@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Khởi tạo database (dù chưa dùng dữ liệu từ DB, chỉ để chuẩn bị)
+        // Khởi tạo database
         SinhVienDB sinhVienDB = new SinhVienDB(this);
 
         // Dữ liệu cứng
@@ -57,14 +57,14 @@ public class MainActivity extends AppCompatActivity {
 
         for (String[] sv : data) {
             danhSachSinhVien.add(new SinhVien(
-                    sv[0],  // Họ và tên
-                    sv[1],  // Mã SV
-                    sv[2],  // Số điện thoại
-                    sv[3],  // Email
-                    sv[4],  // Ngày sinh
-                    sv[5],  // Giới tính
-                    sv[6],  // Sở thích
-                    sv[7]   // Khoa
+                    sv[0],  // hoTen
+                    sv[1],  // maSV
+                    sv[2],  // soDienThoai
+                    sv[3],  // email
+                    sv[4],  // ngaySinh
+                    sv[5],  // gioiTinh
+                    sv[6],  // soThich
+                    sv[7]   // idKhoa
             ));
         }
 

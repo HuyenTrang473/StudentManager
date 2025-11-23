@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SinhVienAdapter extends BaseAdapter {
-    Context context;
-    int resourceLayout;
-    List<SinhVien> danhSachSinhVien = new ArrayList<>();
+    private Context context;
+    private int resourceLayout;
+    private List<SinhVien> danhSachSinhVien = new ArrayList<>();
 
     public SinhVienAdapter(Context context, int resourceLayout, List<SinhVien> danhSachSinhVien) {
         this.context = context;
@@ -22,38 +22,54 @@ public class SinhVienAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount() { return danhSachSinhVien.size(); }
+    public int getCount() {
+        return danhSachSinhVien.size();
+    }
 
     @Override
-    public Object getItem(int position) { return danhSachSinhVien.get(position); }
+    public Object getItem(int position) {
+        return danhSachSinhVien.get(position);
+    }
 
     @Override
-    public long getItemId(int position) { return position; }
+    public long getItemId(int position) {
+        return position;
+    }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        SinhVienView sinhVienView;
-        if(convertView == null){
-            convertView = LayoutInflater.from(context).inflate(R.layout.cell_student_layout, null);
-            sinhVienView = new SinhVienView();
-            sinhVienView.tvHoTen = convertView.findViewById(R.id.tvHoTen);
-            sinhVienView.tvSDT = convertView.findViewById(R.id.tvSDT);
-            sinhVienView.tvMaSV = convertView.findViewById(R.id.tvMaSV);
-            convertView.setTag(sinhVienView);
+        SinhVienViewHolder holder;
+
+        if (convertView == null) {
+            convertView = LayoutInflater.from(context).inflate(resourceLayout, parent, false);
+            holder = new SinhVienViewHolder();
+            holder.tvHoTen = convertView.findViewById(R.id.tvHoTen);
+            holder.tvMaSV = convertView.findViewById(R.id.tvMaSV);
+            holder.tvSDT = convertView.findViewById(R.id.tvSDT);
+            convertView.setTag(holder);
         } else {
-            sinhVienView = (SinhVienView) convertView.getTag();
+            holder = (SinhVienViewHolder) convertView.getTag();
         }
 
         SinhVien sinhVien = danhSachSinhVien.get(position);
-        sinhVienView.tvHoTen.setText(sinhVien.getHoTen());
-        sinhVienView.tvMaSV.setText(sinhVien.getMaSV());
-        sinhVienView.tvSDT.setText(sinhVien.getSoDienThoai());
+
+        holder.tvHoTen.setText(sinhVien.getHoTen() != null ? sinhVien.getHoTen() : "");
+        holder.tvMaSV.setText(sinhVien.getMaSV() != null ? sinhVien.getMaSV() : "");
+        holder.tvSDT.setText(sinhVien.getSoDienThoai() != null ? sinhVien.getSoDienThoai() : "");
+
         return convertView;
     }
 
-    class SinhVienView {
+    // Optional: cập nhật dữ liệu
+    public void updateData(List<SinhVien> newList) {
+        danhSachSinhVien.clear();
+        danhSachSinhVien.addAll(newList);
+        notifyDataSetChanged();
+    }
+
+    private static class SinhVienViewHolder {
         TextView tvHoTen;
-        TextView tvSDT;
         TextView tvMaSV;
+        TextView tvSDT;
     }
 }

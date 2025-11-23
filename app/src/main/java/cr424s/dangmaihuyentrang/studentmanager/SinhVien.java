@@ -6,15 +6,17 @@ public class SinhVien implements Serializable {
     private String hoTen, maSV, soDienThoai, email, idKhoa;
     private String ngaySinh, gioiTinh, soThich;
 
-    public SinhVien(String hoTen, String maSV, String soDienThoai, String email, String idKhoa, String ngaySinh, String gioiTinh, String soThich) {
+    // Constructor sửa thứ tự để khớp với data cứng
+    public SinhVien(String hoTen, String maSV, String soDienThoai, String email,
+                    String ngaySinh, String gioiTinh, String soThich, String idKhoa) {
         this.hoTen = hoTen;
         this.maSV = maSV;
         this.soDienThoai = soDienThoai;
         this.email = email;
-        this.idKhoa = idKhoa;
         this.ngaySinh = ngaySinh;
         this.gioiTinh = gioiTinh;
         this.soThich = soThich;
+        this.idKhoa = idKhoa;
     }
 
     public SinhVien() {
@@ -45,10 +47,10 @@ public class SinhVien implements Serializable {
                 ", maSV='" + maSV + '\'' +
                 ", soDienThoai='" + soDienThoai + '\'' +
                 ", email='" + email + '\'' +
-                ", idKhoa='" + idKhoa + '\'' +
                 ", ngaySinh='" + ngaySinh + '\'' +
                 ", gioiTinh='" + gioiTinh + '\'' +
                 ", soThich='" + soThich + '\'' +
+                ", idKhoa='" + idKhoa + '\'' +
                 '}';
     }
 }

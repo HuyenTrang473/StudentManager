@@ -25,12 +25,14 @@ public class SinhVienDB extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        // Tạo bảng Department
         String departmentTable = "CREATE TABLE Department (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "department_name TEXT NOT NULL," +
                 "office_location TEXT," +
                 "phone_number TEXT" +
                 ")";
+        // Tạo bảng Student
         String studentTable = "CREATE TABLE Student (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "student_code TEXT NOT NULL UNIQUE," +
@@ -40,7 +42,7 @@ public class SinhVienDB extends SQLiteOpenHelper {
                 "email TEXT," +
                 "gender TEXT," +
                 "hobbies TEXT," +
-                "department_id INTEGER," +
+                "department_id TEXT," +  // sửa sang TEXT để khớp idKhoa kiểu String
                 "FOREIGN KEY (department_id) REFERENCES Department(id)" +
                 ")";
         db.execSQL(departmentTable);
@@ -54,8 +56,8 @@ public class SinhVienDB extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    // ================ Department CRUD =================
-    public long themKhoa(Department dep){
+    // ================= Department CRUD =================
+    public long themKhoa(Department dep) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("department_name", dep.getName());
@@ -66,7 +68,7 @@ public class SinhVienDB extends SQLiteOpenHelper {
         return res;
     }
 
-    public boolean suaKhoa(Department dep){
+    public boolean suaKhoa(Department dep) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("office_location", dep.getDescription());
@@ -76,25 +78,25 @@ public class SinhVienDB extends SQLiteOpenHelper {
         return updated > 0;
     }
 
-    public boolean xoaKhoaById(int id){
+    public boolean xoaKhoaById(int id) {
         SQLiteDatabase db = getWritableDatabase();
         int deleted = db.delete("Department", "id = ?", new String[]{String.valueOf(id)});
         db.close();
         return deleted > 0;
     }
 
-    public boolean xoaKhoaByName(String name){
+    public boolean xoaKhoaByName(String name) {
         SQLiteDatabase db = getWritableDatabase();
         int deleted = db.delete("Department", "department_name = ?", new String[]{name});
         db.close();
         return deleted > 0;
     }
 
-    public List<Department> getAllDepartment(){
+    public List<Department> getAllDepartment() {
         List<Department> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         Cursor cs = db.query("Department", null, null, null, null, null, "department_name ASC");
-        if(cs.moveToFirst()){
+        if (cs.moveToFirst()) {
             do {
                 Department dep = new Department(
                         cs.getString(cs.getColumnIndexOrThrow("department_name")),
@@ -108,11 +110,11 @@ public class SinhVienDB extends SQLiteOpenHelper {
         return list;
     }
 
-    public List<Department> getDepartmentByName(String name){
+    public List<Department> getDepartmentByName(String name) {
         List<Department> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         Cursor cs = db.query("Department", null, "department_name LIKE ?", new String[]{"%" + name + "%"}, null, null, "department_name ASC");
-        if(cs.moveToFirst()){
+        if (cs.moveToFirst()) {
             do {
                 Department dep = new Department(
                         cs.getString(cs.getColumnIndexOrThrow("department_name")),
@@ -120,14 +122,14 @@ public class SinhVienDB extends SQLiteOpenHelper {
                         cs.getString(cs.getColumnIndexOrThrow("phone_number"))
                 );
                 list.add(dep);
-            } while(cs.moveToNext());
+            } while (cs.moveToNext());
         }
         cs.close();
         return list;
     }
 
-    // ================ Student CRUD =================
-    public long themSinhVien(SinhVien sv){
+    // ================= Student CRUD =================
+    public long themSinhVien(SinhVien sv) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("student_code", sv.getMaSV());
@@ -143,7 +145,7 @@ public class SinhVienDB extends SQLiteOpenHelper {
         return res;
     }
 
-    public boolean suaSinhVien(SinhVien sv){
+    public boolean suaSinhVien(SinhVien sv) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("full_name", sv.getHoTen());
@@ -158,31 +160,31 @@ public class SinhVienDB extends SQLiteOpenHelper {
         return updated > 0;
     }
 
-    public boolean xoaSinhVien(String maSV){
+    public boolean xoaSinhVien(String maSV) {
         SQLiteDatabase db = getWritableDatabase();
         int deleted = db.delete("Student", "student_code = ?", new String[]{maSV});
         db.close();
         return deleted > 0;
     }
 
-    public List<SinhVien> getAllSinhVien(){
+    public List<SinhVien> getAllSinhVien() {
         List<SinhVien> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         Cursor cs = db.query("Student", null, null, null, null, null, "full_name ASC");
-        if(cs.moveToFirst()){
+        if (cs.moveToFirst()) {
             do {
                 SinhVien sv = new SinhVien(
-                        cs.getString(cs.getColumnIndexOrThrow("full_name")),
-                        cs.getString(cs.getColumnIndexOrThrow("student_code")),
-                        cs.getString(cs.getColumnIndexOrThrow("phone_number")),
-                        cs.getString(cs.getColumnIndexOrThrow("email")),
-                        cs.getString(cs.getColumnIndexOrThrow("department_id")),
-                        cs.getString(cs.getColumnIndexOrThrow("birth_date")),
-                        cs.getString(cs.getColumnIndexOrThrow("gender")),
-                        cs.getString(cs.getColumnIndexOrThrow("hobbies"))
+                        cs.getString(cs.getColumnIndexOrThrow("full_name")),       // hoTen
+                        cs.getString(cs.getColumnIndexOrThrow("student_code")),    // maSV
+                        cs.getString(cs.getColumnIndexOrThrow("phone_number")),    // soDienThoai
+                        cs.getString(cs.getColumnIndexOrThrow("email")),           // email
+                        cs.getString(cs.getColumnIndexOrThrow("birth_date")),      // ngaySinh
+                        cs.getString(cs.getColumnIndexOrThrow("gender")),          // gioiTinh
+                        cs.getString(cs.getColumnIndexOrThrow("hobbies")),         // soThich
+                        cs.getString(cs.getColumnIndexOrThrow("department_id"))    // idKhoa
                 );
                 list.add(sv);
-            } while(cs.moveToNext());
+            } while (cs.moveToNext());
         }
         cs.close();
         return list;

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -32,7 +31,6 @@ public class SinhVienDB extends SQLiteOpenHelper {
                 "office_location TEXT," +
                 "phone_number TEXT" +
                 ")";
-
         String studentTable = "CREATE TABLE Student (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "student_code TEXT NOT NULL UNIQUE," +
@@ -45,7 +43,6 @@ public class SinhVienDB extends SQLiteOpenHelper {
                 "department_id INTEGER," +
                 "FOREIGN KEY (department_id) REFERENCES Department(id)" +
                 ")";
-
         db.execSQL(departmentTable);
         db.execSQL(studentTable);
     }
@@ -57,7 +54,7 @@ public class SinhVienDB extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    // ================= Department CRUD =================
+    // ================ Department CRUD =================
     public long themKhoa(Department dep){
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -129,7 +126,7 @@ public class SinhVienDB extends SQLiteOpenHelper {
         return list;
     }
 
-    // ================= Student CRUD =================
+    // ================ Student CRUD =================
     public long themSinhVien(SinhVien sv){
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -190,5 +187,4 @@ public class SinhVienDB extends SQLiteOpenHelper {
         cs.close();
         return list;
     }
-
 }

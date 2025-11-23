@@ -17,20 +17,21 @@ public class GiaoDien extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_giao_dien);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
         Button btnSV = findViewById(R.id.btnSV);
         Button btnKhoa = findViewById(R.id.btnKhoa);
 
-        btnSV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(GiaoDien.this, MainActivity.class);
-                startActivity(intent);
-            }
+        btnSV.setOnClickListener(v -> {
+            Intent intent = new Intent(GiaoDien.this, MainActivity.class);
+            startActivity(intent);
         });
+
+        // btnKhoa hiện chưa được xử lý
     }
 }

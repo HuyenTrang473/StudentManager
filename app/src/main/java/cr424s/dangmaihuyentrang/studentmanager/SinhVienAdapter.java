@@ -7,13 +7,13 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SinhVienAdapter extends BaseAdapter {
-
     Context context;
     int resourceLayout;
-    List<SinhVien> danhSachSinhVien;
+    List<SinhVien> danhSachSinhVien = new ArrayList<>();
 
     public SinhVienAdapter(Context context, int resourceLayout, List<SinhVien> danhSachSinhVien) {
         this.context = context;
@@ -22,45 +22,38 @@ public class SinhVienAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount() {
-        return danhSachSinhVien.size();
-    }
+    public int getCount() { return danhSachSinhVien.size(); }
 
     @Override
-    public Object getItem(int position) {
-        return danhSachSinhVien.get(position);
-    }
+    public Object getItem(int position) { return danhSachSinhVien.get(position); }
 
     @Override
-    public long getItemId(int position) {
-        return position;
-    }
+    public long getItemId(int position) { return position; }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         SinhVienView sinhVienView;
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(resourceLayout, null);
+        if(convertView == null){
+            convertView = LayoutInflater.from(context).inflate(R.layout.cell_student_layout, null);
             sinhVienView = new SinhVienView();
             sinhVienView.tvHoTen = convertView.findViewById(R.id.tvHoTen);
-            sinhVienView.tvMaSV = convertView.findViewById(R.id.tvMaSV);
             sinhVienView.tvSDT = convertView.findViewById(R.id.tvSDT);
+            sinhVienView.tvMaSV = convertView.findViewById(R.id.tvMaSV);
             convertView.setTag(sinhVienView);
         } else {
             sinhVienView = (SinhVienView) convertView.getTag();
         }
 
-        SinhVien sv = danhSachSinhVien.get(position);
-        sinhVienView.tvHoTen.setText(sv.getHoTen());
-        sinhVienView.tvMaSV.setText(sv.getMaSV());
-        sinhVienView.tvSDT.setText(sv.getSoDienThoai());
-
+        SinhVien sinhVien = danhSachSinhVien.get(position);
+        sinhVienView.tvHoTen.setText(sinhVien.getHoTen());
+        sinhVienView.tvMaSV.setText(sinhVien.getMaSV());
+        sinhVienView.tvSDT.setText(sinhVien.getSoDienThoai());
         return convertView;
     }
 
     class SinhVienView {
         TextView tvHoTen;
-        TextView tvMaSV;
         TextView tvSDT;
+        TextView tvMaSV;
     }
 }

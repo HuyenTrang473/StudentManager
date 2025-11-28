@@ -2,11 +2,16 @@ package cr424s.dangmaihuyentrang.studentmanager;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -18,70 +23,136 @@ import cr424s.dangmaihuyentrang.studentmanager.database.SinhVienDB;
 
 public class MainActivity extends AppCompatActivity {
 
-    ArrayList<SinhVien> danhSachSinhVien;
-    SinhVienAdapter sinhVienAdapter;
+    private ListView listView;
+    private EditText edtTimKiem;
+    private ArrayList<SinhVien> danhSachSinhVien;
+    private SinhVienAdapter sinhVienAdapter;
+    private SinhVienDB db;
+
+    private ActivityResultLauncher<Intent> addStudentLauncher;
+    private ActivityResultLauncher<Intent> updateStudentLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
+        // EdgeToEdge padding
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        // Khởi tạo database
-        SinhVienDB sinhVienDB = new SinhVienDB(this);
+        listView = findViewById(R.id.listView);
+        edtTimKiem = findViewById(R.id.edtTimKiem);
+        db = new SinhVienDB(this, "QLSinhVien", null, 1);
 
-        // Dữ liệu cứng
-        danhSachSinhVien = new ArrayList<>();
-        ListView lv1 = findViewById(R.id.lv1);
+        // Lấy dữ liệu từ database
+        danhSachSinhVien = new ArrayList<>(db.getAllSinhVien());
 
-        String[][] data = {
-                {"Phan Đặng Phương Anh", "283383", "0903849383", "phuonganh@gmail.com", "02/11/2003", "Nữ", "Đọc sách, Âm nhạc", "Công Nghệ Phần Mềm"},
-                {"Hồ Thị Thảo Vy", "283399", "0912345678", "thaovy@gmail.com", "12/06/2003", "Nữ", "Thể thao, Chơi game", "Khoa Học Máy Tính"},
-                {"Đặng Mai Huyền Trang", "283800", "0987654321", "huyentrang@gmail.com", "22/09/2003", "Nữ", "Âm nhạc, Đọc sách", "Big Data"},
-                {"Nguyễn Thị Lệ Na", "123456", "0948474755", "lena@gmail.com", "15/03/2004", "Nữ", "Chơi game, Đọc sách", "Trí Tuệ Nhân Tạo"},
-                {"Văn Hồng Anh", "393844", "0395555127", "honganh@gmail.com", "09/07/2003", "Nam", "Thể thao, Âm nhạc", "Khoa Học Máy Tính"},
-                {"Mai Ánh Sáng", "455555", "0983736633", "anhsang@gmail.com", "11/01/2004", "Nam", "Chơi game, Âm nhạc", "Big Data"},
-                {"Diệp Hồng Phi", "908776", "0948447345", "hongphi@gmail.com", "05/10/2003", "Nam", "Thể thao, Đọc sách", "Trí Tuệ Nhân Tạo"},
-                {"Trần Khánh Hòa", "567890", "0971122334", "khanhhoa@gmail.com", "17/02/2004", "Nữ", "Du lịch, Đọc sách", "Công Nghệ Phần Mềm"},
-                {"Lê Minh Quân", "445566", "0905123456", "minhquan@gmail.com", "25/05/2003", "Nam", "Chạy bộ, Chơi game", "Hệ Thống Thông Tin"},
-                {"Ngô Thị Thanh Hà", "889977", "0936667788", "thanhha@gmail.com", "30/08/2003", "Nữ", "Nghe nhạc, Nấu ăn", "Mạng Máy Tính"},
-                {"Phạm Quốc Bảo", "334455", "0988776655", "quocbao@gmail.com", "10/12/2003", "Nam", "Đọc truyện, Lập trình", "An Toàn Thông Tin"},
-                {"Đỗ Hoàng Tú", "778899", "0918999000", "hoangtudl@gmail.com", "21/04/2004", "Nam", "Âm nhạc, Nghiên cứu AI", "Khoa Học Dữ Liệu"}
-        };
-
-        for (String[] sv : data) {
-            danhSachSinhVien.add(new SinhVien(
-                    sv[0],  // hoTen
-                    sv[1],  // maSV
-                    sv[2],  // soDienThoai
-                    sv[3],  // email
-                    sv[4],  // ngaySinh
-                    sv[5],  // gioiTinh
-                    sv[6],  // soThich
-                    sv[7]   // idKhoa
-            ));
+        // Nếu database rỗng, thêm dữ liệu mặc định
+        if (danhSachSinhVien.isEmpty()) {
+            khoiTaoDuLieu();
+            danhSachSinhVien = new ArrayList<>(db.getAllSinhVien());
         }
 
-        // Thiết lập adapter
-        sinhVienAdapter = new SinhVienAdapter(MainActivity.this, R.layout.cell_student_layout, danhSachSinhVien);
-        lv1.setAdapter(sinhVienAdapter);
+        // Tạo adapter
+        sinhVienAdapter = new SinhVienAdapter(this, R.layout.cell_student_layout, danhSachSinhVien);
+        listView.setAdapter(sinhVienAdapter);
 
-        // Bắt sự kiện click vào item
-        lv1.setOnItemClickListener((parent, view, position, id) -> {
-            SinhVien sinhVien = (SinhVien) sinhVienAdapter.getItem(position);
+        // Launcher thêm sinh viên
+        addStudentLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        SinhVien newSV = (SinhVien) result.getData().getSerializableExtra("newSV");
+                        if (newSV != null) {
+                            danhSachSinhVien.add(newSV);
+                            sinhVienAdapter.refresh();
+                            edtTimKiem.getText().clear();
+                        }
+                    }
+                }
+        );
+
+        // Launcher cập nhật sinh viên
+        updateStudentLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK) {
+                        // Load lại dữ liệu từ DB
+                        danhSachSinhVien.clear();
+                        danhSachSinhVien.addAll(db.getAllSinhVien());
+                        sinhVienAdapter.refresh();
+                    }
+                }
+        );
+
+        // Click vào 1 sinh viên -> mở StudentInforActivity
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            SinhVien sv = danhSachSinhVien.get(position);
             Intent intent = new Intent(MainActivity.this, StudentInfoActivity.class);
-            intent.putExtra("sv0", sinhVien);
-            startActivity(intent);
-
-            Toast.makeText(MainActivity.this,
-                    "Bạn chọn: " + sinhVien.getHoTen(),
-                    Toast.LENGTH_SHORT).show();
+            intent.putExtra("k_sinhvien", sv);
+            updateStudentLauncher.launch(intent);
         });
+
+        // Search filter
+        edtTimKiem.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void afterTextChanged(Editable s) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                sinhVienAdapter.filter(s.toString().toLowerCase().trim());
+            }
+        });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.itemThemMoiSV) {
+            Intent intent = new Intent(MainActivity.this, cr424s.dangmaihuyentrang.studentmanager.AddStudentActivity.class);
+            addStudentLauncher.launch(intent);
+        }
+        else if(item.getItemId() == R.id.itemXoaTatCa) {
+            new android.app.AlertDialog.Builder(this)
+                    .setTitle("Xác nhận")
+                    .setMessage("Bạn có chắc chắn muốn xóa tất cả sinh viên?")
+                    .setPositiveButton("Có", (dialog, which) -> {
+                        db.xoaTatCaSinhVien();        // Xóa toàn bộ trong DB
+                        danhSachSinhVien.clear();    // Xóa danh sách trong MainActivity
+                        sinhVienAdapter.refresh();   // Cập nhật adapter
+                        Toast.makeText(MainActivity.this, "Đã xóa tất cả sinh viên!", Toast.LENGTH_SHORT).show();
+                    })
+                    .setNegativeButton("Không", null)
+                    .show();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    // Thêm dữ liệu mặc định vào DB
+    private void khoiTaoDuLieu() {
+        SinhVien[] defaultSVs = new SinhVien[]{
+                new SinhVien("SV001", "Nguyễn Nhật Minh", "0911111111", "minhn01@gmail.com", "03/01/2003", "Công Nghệ Phần Mềm", "Nam", "Bóng đá"),
+                new SinhVien("SV002", "Trần Thảo Vy", "0922222222", "vyt02@gmail.com", "15/02/2003", "Khoa Học Máy Tính", "Nữ", "Nghe nhạc"),
+                new SinhVien("SV003", "Lê Quốc Hùng", "0933333333", "hunglq03@gmail.com", "09/03/2002", "An Toàn Thông Tin", "Nam", "Chơi game"),
+                new SinhVien("SV004", "Phạm Mỹ Duyên", "0944444444", "duyenpm04@gmail.com", "28/04/2003", "Mạng Máy Tính", "Nữ", "Xem phim"),
+                new SinhVien("SV005", "Hoàng Anh Tuấn", "0955555555", "tuanha05@gmail.com", "21/05/2002", "Hệ Thống Thông Tin", "Nam", "Đọc sách"),
+                new SinhVien("SV006", "Võ Gia Hân", "0966666666", "hanvg06@gmail.com", "12/06/2003", "Big Data", "Nữ", "Du lịch"),
+                new SinhVien("SV007", "Ngô Trọng Phúc", "0977777777", "phucnt07@gmail.com", "27/07/2003", "Trí Tuệ Nhân Tạo", "Nam", "Bơi lội"),
+                new SinhVien("SV008", "Đỗ Mai Linh", "0988888888", "linhdm08@gmail.com", "16/08/2002", "Khoa Học Máy Tính", "Nữ", "Chụp ảnh"),
+                new SinhVien("SV009", "Huỳnh Thanh Tâm", "0999999999", "tamht09@gmail.com", "07/09/2003", "Công Nghệ Phần Mềm", "Nam", "Âm nhạc"),
+                new SinhVien("SV010", "Phan Khánh Chi", "0900000000", "chipk10@gmail.com", "10/10/2002", "An Toàn Thông Tin", "Nữ", "Nấu ăn")
+        };
+
+        for (SinhVien sv : defaultSVs) {
+            db.themSV(sv);
+        }
     }
 }

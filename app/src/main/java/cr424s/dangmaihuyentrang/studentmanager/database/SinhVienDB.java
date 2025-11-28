@@ -1,10 +1,10 @@
 package cr424s.dangmaihuyentrang.studentmanager.database;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -16,177 +16,207 @@ import cr424s.dangmaihuyentrang.studentmanager.SinhVien;
 
 public class SinhVienDB extends SQLiteOpenHelper {
 
-    private static final String DB_NAME = "QLSinhVien";
-    private static final int DB_VERSION = 1;
+    // Bảng Khoa
+    String khoaTable = "CREATE TABLE Khoa (\n" +
+            "    maKhoa TEXT PRIMARY KEY,\n" +
+            "    tenKhoa TEXT NOT NULL,\n" +
+            "    diaChiKhoa TEXT,\n" +
+            "    soDienThoaiKhoa TEXT\n" +
+            ")";
 
-    public SinhVienDB(@Nullable Context context) {
-        super(context, DB_NAME, null, DB_VERSION);
+    // Bảng Sinh viên
+    String sinhVienTable = "CREATE TABLE SinhVien (\n" +
+            "    maSV TEXT PRIMARY KEY,\n" +
+            "    hoTen TEXT NOT NULL,\n" +
+            "    ngaySinh TEXT,\n" +
+            "    gioiTinh TEXT,\n" +
+            "    email TEXT,\n" +
+            "    soDienThoai TEXT,\n" +
+            "    soThich TEXT,\n" +
+            "    maKhoa TEXT,\n" +
+            "    FOREIGN KEY (maKhoa) REFERENCES Khoa(maKhoa)\n" +
+            ")";
+
+    public SinhVienDB(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
+        super(context, name, factory, version);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // Tạo bảng Department
-        String departmentTable = "CREATE TABLE Department (" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "department_name TEXT NOT NULL," +
-                "office_location TEXT," +
-                "phone_number TEXT" +
-                ")";
-        // Tạo bảng Student
-        String studentTable = "CREATE TABLE Student (" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "student_code TEXT NOT NULL UNIQUE," +
-                "full_name TEXT NOT NULL," +
-                "birth_date TEXT," +
-                "phone_number TEXT," +
-                "email TEXT," +
-                "gender TEXT," +
-                "hobbies TEXT," +
-                "department_id TEXT," +  // sửa sang TEXT để khớp idKhoa kiểu String
-                "FOREIGN KEY (department_id) REFERENCES Department(id)" +
-                ")";
-        db.execSQL(departmentTable);
-        db.execSQL(studentTable);
+        db.execSQL(khoaTable);
+        db.execSQL(sinhVienTable);
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS Student");
-        db.execSQL("DROP TABLE IF EXISTS Department");
-        onCreate(db);
-    }
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) { }
 
-    // ================= Department CRUD =================
-    public long themKhoa(Department dep) {
+    // Thêm Khoa bằng tham số
+    public long themKhoa(String maKhoa, String tenKhoa, String diaChiKhoa, String soDienThoaiKhoa) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put("department_name", dep.getName());
-        values.put("office_location", dep.getDescription());
-        values.put("phone_number", dep.getPhone());
-        long res = db.insert("Department", null, values);
+        values.put("maKhoa", maKhoa);
+        values.put("tenKhoa", tenKhoa);
+        values.put("diaChiKhoa", diaChiKhoa);
+        values.put("soDienThoaiKhoa", soDienThoaiKhoa);
+        long i = db.insert("Khoa", null, values);
         db.close();
-        return res;
+        return i;
     }
 
-    public boolean suaKhoa(Department dep) {
+    // Thêm Khoa bằng đối tượng Department
+    public long themKhoa(Department department) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put("office_location", dep.getDescription());
-        values.put("phone_number", dep.getPhone());
-        int updated = db.update("Department", values, "department_name = ?", new String[]{dep.getName()});
+        values.put("maKhoa", department.getMaKhoa());
+        values.put("tenKhoa", department.getTenKhoa());
+        values.put("diaChiKhoa", department.getDiaChi());
+        values.put("soDienThoaiKhoa", department.getSdt());
+        long i = db.insert("Khoa", null, values);
         db.close();
-        return updated > 0;
+        return i;
     }
 
-    public boolean xoaKhoaById(int id) {
+    // Sửa thông tin Khoa
+    public void suaKhoa(Department department) {
         SQLiteDatabase db = getWritableDatabase();
-        int deleted = db.delete("Department", "id = ?", new String[]{String.valueOf(id)});
+        ContentValues values = new ContentValues();
+        values.put("soDienThoaiKhoa", department.getSdt());
+        db.update("Khoa", values, "maKhoa = ?", new String[]{department.getMaKhoa()});
         db.close();
-        return deleted > 0;
     }
 
-    public boolean xoaKhoaByName(String name) {
-        SQLiteDatabase db = getWritableDatabase();
-        int deleted = db.delete("Department", "department_name = ?", new String[]{name});
-        db.close();
-        return deleted > 0;
-    }
-
-    public List<Department> getAllDepartment() {
-        List<Department> list = new ArrayList<>();
+    // Lấy tất cả Khoa
+    public List<Department> getAllKhoa() {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cs = db.query("Department", null, null, null, null, null, "department_name ASC");
+        List<Department> list = new ArrayList<>();
+        Cursor cs = db.rawQuery("SELECT * FROM Khoa", null);
+        Log.i("DB_DEBUG", "Tổng số khoa: " + cs.getCount());
+
         if (cs.moveToFirst()) {
             do {
-                Department dep = new Department(
-                        cs.getString(cs.getColumnIndexOrThrow("department_name")),
-                        cs.getString(cs.getColumnIndexOrThrow("office_location")),
-                        cs.getString(cs.getColumnIndexOrThrow("phone_number"))
+                Department khoa = new Department(
+                        cs.getString(0), //maKhoa
+                        cs.getString(1), //tenKhoa
+                        cs.getString(2), //diaChi
+                        cs.getString(3)  //sdt
                 );
-                list.add(dep);
+                list.add(khoa);
             } while (cs.moveToNext());
         }
         cs.close();
+        db.close();
         return list;
     }
 
-    public List<Department> getDepartmentByName(String name) {
-        List<Department> list = new ArrayList<>();
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cs = db.query("Department", null, "department_name LIKE ?", new String[]{"%" + name + "%"}, null, null, "department_name ASC");
-        if (cs.moveToFirst()) {
-            do {
-                Department dep = new Department(
-                        cs.getString(cs.getColumnIndexOrThrow("department_name")),
-                        cs.getString(cs.getColumnIndexOrThrow("office_location")),
-                        cs.getString(cs.getColumnIndexOrThrow("phone_number"))
-                );
-                list.add(dep);
-            } while (cs.moveToNext());
-        }
-        cs.close();
-        return list;
+    // Xóa khoa theo mã
+    public boolean xoaKhoaTheoMa(String maKhoa) {
+        SQLiteDatabase db = getWritableDatabase();
+        int rowsDeleted = db.delete("Khoa", "maKhoa = ?", new String[]{maKhoa});
+        db.close();
+        return rowsDeleted > 0;
     }
 
-    // ================= Student CRUD =================
-    public long themSinhVien(SinhVien sv) {
+    // Xóa toàn bộ khoa
+    public void xoaTatCaKhoa() {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete("Khoa", null, null);
+        db.close();
+    }
+
+    public long themSV(SinhVien sv) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put("student_code", sv.getMaSV());
-        values.put("full_name", sv.getHoTen());
-        values.put("birth_date", sv.getNgaySinh());
-        values.put("phone_number", sv.getSoDienThoai());
+        values.put("maSV", sv.getMaSV());
+        values.put("hoTen", sv.getHoTen());
+        values.put("ngaySinh", sv.getNgaySinh());
+        values.put("gioiTinh", sv.getGioitinh());
         values.put("email", sv.getEmail());
-        values.put("gender", sv.getGioiTinh());
-        values.put("hobbies", sv.getSoThich());
-        values.put("department_id", sv.getIdKhoa());
-        long res = db.insert("Student", null, values);
+        values.put("soDienThoai", sv.getSdt());
+        values.put("soThich", sv.getSothich());
+        values.put("maKhoa", sv.getKhoa());
+        long i = db.insert("SinhVien", null, values);
         db.close();
-        return res;
+        return i;
     }
-
-    public boolean suaSinhVien(SinhVien sv) {
+    public void suaTTSV(SinhVien sv) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put("full_name", sv.getHoTen());
-        values.put("birth_date", sv.getNgaySinh());
-        values.put("phone_number", sv.getSoDienThoai());
+        values.put("maSV", sv.getMaSV());
+        values.put("hoTen", sv.getHoTen());
+        values.put("ngaySinh", sv.getNgaySinh());
+        values.put("gioiTinh", sv.getGioitinh());
         values.put("email", sv.getEmail());
-        values.put("gender", sv.getGioiTinh());
-        values.put("hobbies", sv.getSoThich());
-        values.put("department_id", sv.getIdKhoa());
-        int updated = db.update("Student", values, "student_code = ?", new String[]{sv.getMaSV()});
+        values.put("soDienThoai", sv.getSdt());
+        values.put("soThich", sv.getSothich());
+        values.put("maKhoa", sv.getKhoa());
+        int rows = db.update("SinhVien", values, "maSV = ?", new String[]{sv.getMaSV()});
         db.close();
-        return updated > 0;
     }
-
-    public boolean xoaSinhVien(String maSV) {
-        SQLiteDatabase db = getWritableDatabase();
-        int deleted = db.delete("Student", "student_code = ?", new String[]{maSV});
-        db.close();
-        return deleted > 0;
-    }
-
     public List<SinhVien> getAllSinhVien() {
-        List<SinhVien> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cs = db.query("Student", null, null, null, null, null, "full_name ASC");
+        List<SinhVien> list = new ArrayList<>();
+
+        Cursor cs = db.rawQuery("SELECT * FROM SinhVien", null);
+        Log.i("DB_DEBUG", "Tổng số sinh viên: " + cs.getCount());
+
         if (cs.moveToFirst()) {
             do {
                 SinhVien sv = new SinhVien(
-                        cs.getString(cs.getColumnIndexOrThrow("full_name")),       // hoTen
-                        cs.getString(cs.getColumnIndexOrThrow("student_code")),    // maSV
-                        cs.getString(cs.getColumnIndexOrThrow("phone_number")),    // soDienThoai
-                        cs.getString(cs.getColumnIndexOrThrow("email")),           // email
-                        cs.getString(cs.getColumnIndexOrThrow("birth_date")),      // ngaySinh
-                        cs.getString(cs.getColumnIndexOrThrow("gender")),          // gioiTinh
-                        cs.getString(cs.getColumnIndexOrThrow("hobbies")),         // soThich
-                        cs.getString(cs.getColumnIndexOrThrow("department_id"))    // idKhoa
+                        cs.getString(0), // maSV
+                        cs.getString(1), // hoTen
+                        cs.getString(5), // soDienThoai
+                        cs.getString(4), // email
+                        cs.getString(2), // ngaySinh
+                        cs.getString(7), // maKhoa
+                        cs.getString(3), // gioiTinh
+                        cs.getString(6)  // soThich
                 );
                 list.add(sv);
             } while (cs.moveToNext());
         }
         cs.close();
+        db.close();
         return list;
     }
+
+    // Lấy sinh viên theo mã
+    public SinhVien getSinhVienTheoMa(String maSV) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cs = db.rawQuery("SELECT * FROM SinhVien WHERE maSV = ?", new String[]{maSV});
+
+        SinhVien sv = null;
+        if (cs.moveToFirst()) {
+            sv = new SinhVien(
+                    cs.getString(0), // maSV
+                    cs.getString(1), // hoTen
+                    cs.getString(5), // soDienThoai
+                    cs.getString(4), // email
+                    cs.getString(2), // ngaySinh
+                    cs.getString(7), // maKhoa
+                    cs.getString(3), // gioiTinh
+                    cs.getString(6)  // soThich
+            );
+        }
+        cs.close();
+        db.close();
+        return sv;
+    }
+
+    // Xóa toàn bộ sinh viên
+    public void xoaTatCaSinhVien() {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete("SinhVien", null, null);
+        db.close();
+    }
+    // Xóa sinh viên theo mã
+    public boolean xoaSinhVienTheoMa(String maSV) {
+        SQLiteDatabase db = getWritableDatabase();
+        int rowsDeleted = db.delete("SinhVien", "maSV = ?", new String[]{maSV});
+        db.close();
+        return rowsDeleted > 0;
+    }
+    public boolean kiemTraMaSV(String maSV) {
+        return getSinhVienTheoMa(maSV) != null;
+    }
+
 }

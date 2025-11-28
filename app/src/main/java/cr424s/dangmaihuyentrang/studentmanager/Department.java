@@ -1,47 +1,60 @@
 package cr424s.dangmaihuyentrang.studentmanager;
 
-public class Department {
-    private String name,Phone,Description;
+import java.io.Serializable;
 
-    public Department(String description, String phone, String name) {
-        Description = description;
-        Phone = phone;
-        this.name = name;
+public class Department implements Serializable {
+    String maKhoa,tenKhoa, diaChi,sdt;
+
+
+    public Department(String maKhoa, String tenKhoa, String diaChi, String sdt) {
+        this.maKhoa = maKhoa;
+        this.tenKhoa = tenKhoa;
+        this.diaChi = diaChi;
+        this.sdt = sdt;
     }
 
-    public Department() {
+    public String getMaKhoa() {
+        return maKhoa;
     }
 
-    public String getName() {
-        return name;
+    public void setMaKhoa(String maKhoa) {
+        this.maKhoa = maKhoa;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getTenKhoa() {
+        return tenKhoa;
     }
 
-    public String getDescription() {
-        return Description;
+    public void setTenKhoa(String tenKhoa) {
+        this.tenKhoa = tenKhoa;
     }
 
-    public void setDescription(String description) {
-        Description = description;
+    public String getDiaChi() {
+        return diaChi;
     }
 
-    public String getPhone() {
-        return Phone;
+    public void setDiaChi(String diaChi) {
+        this.diaChi = diaChi;
     }
 
-    public void setPhone(String phone) {
-        Phone = phone;
+    public String getSdt() {
+        return sdt;
+    }
+
+    public void setSdt(String sdt) {
+        this.sdt = sdt;
     }
 
     @Override
     public String toString() {
         return "Department{" +
-                "name='" + name + '\'' +
-                ", Phone='" + Phone + '\'' +
-                ", Description='" + Description + '\'' +
+                "maKhoa='" + maKhoa + '\'' +
+                ", tenKhoa='" + tenKhoa + '\'' +
+                ", diaChi='" + diaChi + '\'' +
+                ", sdt=" + sdt +
                 '}';
     }
 }
+
+
+

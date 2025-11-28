@@ -1,8 +1,8 @@
 package cr424s.dangmaihuyentrang.studentmanager;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -20,13 +20,11 @@ import androidx.core.view.WindowInsetsCompat;
 import cr424s.dangmaihuyentrang.studentmanager.database.SinhVienDB;
 
 public class StudentInfoActivity extends AppCompatActivity {
-
-    EditText edtTen, edtMSV, edtSdt, edtEmail, edtNgaySinh;
-    RadioButton rbtNam, rbtNu;
-    CheckBox checkNhac, checkDoc, checkTheThao, checkXem;
+    EditText edtHoTen, edtSdt, edtMaSV,edtNgaySinh ,edtMail;
     Spinner spKhoa;
-    Button btnUpdate, btnDelete;
-
+    RadioButton rbtNam, rbtNu;
+    CheckBox cbMusic,cbReadBook,cbSport,cbGame;
+    Button btnCapNhat, btnXoa;
     String[] KHOA = {
             "Công Nghệ Phần Mềm",
             "Khoa Học Máy Tính",
@@ -35,135 +33,140 @@ public class StudentInfoActivity extends AppCompatActivity {
             "Hệ Thống Thông Tin",
             "Mạng Máy Tính",
             "An Toàn Thông Tin",
-            "Khoa Học Dữ Liệu",
-            "Kỹ Thuật Phần Mềm",
-            "Công Nghệ Thông Tin Tổng Hợp"
     };
 
-    SinhVien sv;
-
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_student_info);
-
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        edtHoTen = findViewById(R.id.hoten);
+        edtMaSV = findViewById(R.id.masv);
+        edtSdt = findViewById(R.id.sdt);
+        edtNgaySinh = findViewById(R.id.ngaysinh);
+        edtMail = findViewById(R.id.email);
 
-        edtTen = findViewById(R.id.edtHoTen);
-        edtMSV = findViewById(R.id.edtMaSV);
-        edtSdt = findViewById(R.id.edtSDT);
-        edtEmail = findViewById(R.id.edtEmail);
-        edtNgaySinh = findViewById(R.id.edtNgaySinh);
+        cbMusic = findViewById(R.id.amnhac);
+        cbGame = findViewById(R.id.choigame);
+        cbSport = findViewById(R.id.thethao);
+        cbReadBook = findViewById(R.id.docsach);
 
-        rbtNam = findViewById(R.id.rdNam);
-        rbtNu = findViewById(R.id.rdNu);
+        rbtNam = findViewById(R.id.nam);
+        rbtNu = findViewById(R.id.nu);
 
-        checkNhac = findViewById(R.id.checkNhac);
-        checkDoc = findViewById(R.id.checkDoc);
-        checkTheThao = findViewById(R.id.checkTheThao);
-        checkXem = findViewById(R.id.checkXem);
+        spKhoa = findViewById(R.id.khoa);
+        ArrayAdapter<String> adapterKhoa = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, KHOA);
+        spKhoa.setAdapter(adapterKhoa);
 
-        spKhoa = findViewById(R.id.spinner2);
-
-        btnUpdate = findViewById(R.id.btnUpdate);
-        btnDelete = findViewById(R.id.btnDelete);
-
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, KHOA);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spKhoa.setAdapter(adapter);
-
-        sv = (SinhVien) getIntent().getSerializableExtra("sv0");
-
-        if (sv != null) {
-            loadDataToView(sv);
-        }
-
-        btnUpdate.setOnClickListener(v -> updateStudent());
-        btnDelete.setOnClickListener(v -> deleteStudent());
-    }
-
-    private void loadDataToView(SinhVien sv) {
-        edtTen.setText(sv.getHoTen());
-        edtMSV.setText(sv.getMaSV());
-        edtSdt.setText(sv.getSoDienThoai());
-        edtEmail.setText(sv.getEmail());
-        edtNgaySinh.setText(sv.getNgaySinh());
-
-        for (int i = 0; i < KHOA.length; i++) {
-            if (KHOA[i].equals(sv.getIdKhoa())) {
-                spKhoa.setSelection(i);
-                break;
+        SinhVien sinhVien = (SinhVien) getIntent().getSerializableExtra("k_sinhvien");
+        if (sinhVien != null) {
+            edtHoTen.setText(sinhVien.getHoTen());
+            edtSdt.setText(sinhVien.getSdt());
+            edtMaSV.setText(sinhVien.getMaSV());
+            edtNgaySinh.setText(sinhVien.getNgaySinh());
+            edtMail.setText(sinhVien.getEmail());
+            for (int i = 0; i < KHOA.length; i++) {
+                if (KHOA[i].equals(sinhVien.getKhoa())) {
+                    spKhoa.setSelection(i);
+                    break;
+                }
             }
+            spKhoa.setEnabled(false);
+
+            if ("Nam".equalsIgnoreCase(sinhVien.getGioitinh())) rbtNam.setChecked(true);
+            else if ("Nữ".equalsIgnoreCase(sinhVien.getGioitinh())) rbtNu.setChecked(true);
+
+            String st = sinhVien.getSothich() == null ? "" : sinhVien.getSothich();
+            cbMusic.setChecked(st.contains("Âm nhạc"));
+            cbReadBook.setChecked(st.contains("Đọc sách"));
+            cbSport.setChecked(st.contains("Thể thao"));
+            cbGame.setChecked(st.contains("Chơi game"));
         }
+        btnCapNhat = findViewById(R.id.btnCapNhat);
+        btnCapNhat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SinhVienDB db = new SinhVienDB(StudentInfoActivity.this, "QLSinhVien", null, 1);
+                String maSV = edtMaSV.getText().toString().trim();
 
-        if ("Nam".equalsIgnoreCase(sv.getGioiTinh())) rbtNam.setChecked(true);
-        else rbtNu.setChecked(true);
+                if (maSV.isEmpty()) {
+                    Toast.makeText(StudentInfoActivity.this, "Mã SV trống!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-        String st = sv.getSoThich() == null ? "" : sv.getSoThich();
-        checkNhac.setChecked(st.contains("Âm nhạc"));
-        checkDoc.setChecked(st.contains("Đọc sách"));
-        checkTheThao.setChecked(st.contains("Thể thao"));
-        checkXem.setChecked(st.contains("Chơi game"));
-    }
+                if (!db.kiemTraMaSV(maSV)) {
+                    Toast.makeText(StudentInfoActivity.this, "Mã SV không tồn tại!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-    private void updateStudent() {
-        SinhVienDB db = new SinhVienDB(this);
+                String hoTen = edtHoTen.getText().toString().trim();
+                String ngaySinh = edtNgaySinh.getText().toString().trim();
+                String sdt = edtSdt.getText().toString().trim();
+                String email = edtMail.getText().toString().trim();
+                String gioiTinh = rbtNam.isChecked() ? "Nam" : "Nữ";
+                String khoa = spKhoa.getSelectedItem().toString();
 
-        String ma = edtMSV.getText().toString().trim();
-        if (ma.isEmpty()) {
-            Toast.makeText(this, "Mã sinh viên trống!", Toast.LENGTH_SHORT).show();
-            return;
-        }
+                String soThich = "";
+                if (cbMusic.isChecked()) soThich += "Âm nhạc, ";
+                if (cbReadBook.isChecked()) soThich += "Đọc sách, ";
+                if (cbSport.isChecked()) soThich += "Thể thao, ";
+                if (cbGame.isChecked()) soThich += "Chơi game, ";
+                if (soThich.endsWith(", ")) soThich = soThich.substring(0, soThich.length() - 2);
 
-        String ten = edtTen.getText().toString().trim();
-        String sdt = edtSdt.getText().toString().trim();
-        String email = edtEmail.getText().toString().trim();
-        String ngaySinh = edtNgaySinh.getText().toString().trim();
-        String gioiTinh = rbtNam.isChecked() ? "Nam" : "Nữ";
-        String khoa = spKhoa.getSelectedItem().toString();
+                SinhVien sv = new SinhVien(maSV, hoTen, sdt, email, ngaySinh, khoa, gioiTinh, soThich);
 
-        String st = "";
-        if (checkNhac.isChecked()) st += "Âm nhạc, ";
-        if (checkDoc.isChecked()) st += "Đọc sách, ";
-        if (checkTheThao.isChecked()) st += "Thể thao, ";
-        if (checkXem.isChecked()) st += "Chơi game, ";
-        if (st.endsWith(", ")) st = st.substring(0, st.length() - 2);
+                db.suaTTSV(sv);
+                Toast.makeText(StudentInfoActivity.this, "Cập nhật sinh viên thành công!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent();
+                intent.putExtra("sv_updated", sv);  // gửi đối tượng sinh viên sau khi sửa
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        });
+        btnXoa = findViewById(R.id.btnXoa);
+        btnXoa.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SinhVienDB db = new SinhVienDB(StudentInfoActivity.this, "QLSinhVien", null, 1);
+                String maSV = edtMaSV.getText().toString().trim();
 
-        SinhVien newSV = new SinhVien(ma, ten, sdt, email, khoa, ngaySinh, gioiTinh, st);
+                if (maSV.isEmpty()) {
+                    Toast.makeText(StudentInfoActivity.this, "Vui lòng nhập mã SV để xóa!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-        db.suaSinhVien(newSV);
+                // Kiểm tra sinh viên có tồn tại không
+                if (!db.kiemTraMaSV(maSV)) {
+                    Toast.makeText(StudentInfoActivity.this, "Mã SV không tồn tại!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-        Toast.makeText(this, "Cập nhật thành công!", Toast.LENGTH_SHORT).show();
+                // Xóa sinh viên
+                boolean ok = db.xoaSinhVienTheoMa(maSV);
+                if (ok) {
+                    Toast.makeText(StudentInfoActivity.this, "Xóa sinh viên thành công!", Toast.LENGTH_SHORT).show();
 
-        Intent intent = new Intent();
-        intent.putExtra("sv_updated", newSV);
-        setResult(RESULT_OK, intent);
-        finish();
-    }
-
-    private void deleteStudent() {
-        SinhVienDB db = new SinhVienDB(this);
-        String ma = edtMSV.getText().toString().trim();
-
-        if (ma.isEmpty()) {
-            Toast.makeText(this, "Mã sinh viên không được trống!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        db.xoaSinhVien(ma);
-
-        Toast.makeText(this, "Xóa thành công!", Toast.LENGTH_SHORT).show();
-
-        Intent intent = new Intent();
-        intent.putExtra("sv_deleted", ma);
-        setResult(RESULT_OK, intent);
-        finish();
+                    // Xóa các trường trong giao diện
+                    edtMaSV.setText("");
+                    edtHoTen.setText("");
+                    edtSdt.setText("");
+                    edtMail.setText("");
+                    edtNgaySinh.setText("");
+                    rbtNam.setChecked(false);
+                    rbtNu.setChecked(false);
+                    cbMusic.setChecked(false);
+                    cbReadBook.setChecked(false);
+                    cbSport.setChecked(false);
+                    cbGame.setChecked(false);
+                } else {
+                    Toast.makeText(StudentInfoActivity.this, "Xóa thất bại!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }

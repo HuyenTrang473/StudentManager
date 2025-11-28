@@ -11,24 +11,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SinhVienAdapter extends BaseAdapter {
-    private Context context;
-    private int resourceLayout;
-    private List<SinhVien> danhSachSinhVien = new ArrayList<>();
 
-    public SinhVienAdapter(Context context, int resourceLayout, List<SinhVien> danhSachSinhVien) {
+    private Context context;
+    private int layout;
+    private List<cr424s.dangmaihuyentrang.studentmanager.SinhVien> displayList;   // danh sách đang hiển thị
+    private List<cr424s.dangmaihuyentrang.studentmanager.SinhVien> fullList;      // danh sách gốc
+
+    public SinhVienAdapter(Context context, int layout, ArrayList<cr424s.dangmaihuyentrang.studentmanager.SinhVien> list) {
         this.context = context;
-        this.resourceLayout = resourceLayout;
-        this.danhSachSinhVien = danhSachSinhVien;
+        this.layout = layout;
+
+        this.fullList = list;                     // trỏ trực tiếp danh sách ngoài Main
+        this.displayList = new ArrayList<>(list); // tạo bản copy để hiển thị + filter
     }
 
     @Override
     public int getCount() {
-        return danhSachSinhVien.size();
+        return displayList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return danhSachSinhVien.get(position);
+        return displayList.get(position);
     }
 
     @Override
@@ -36,40 +40,54 @@ public class SinhVienAdapter extends BaseAdapter {
         return position;
     }
 
+    private static class ViewHolder {
+        TextView tvHoTen, tvMaSV, tvSDT;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        SinhVienViewHolder holder;
-
+        ViewHolder holder;
         if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(resourceLayout, parent, false);
-            holder = new SinhVienViewHolder();
-            holder.tvHoTen = convertView.findViewById(R.id.tvHoTen);
-            holder.tvMaSV = convertView.findViewById(R.id.tvMaSV);
-            holder.tvSDT = convertView.findViewById(R.id.tvSDT);
+            convertView = LayoutInflater.from(context).inflate(layout, parent, false);
+            holder = new ViewHolder();
+            holder.tvHoTen = convertView.findViewById(R.id.tenKhoa);
+            holder.tvMaSV = convertView.findViewById(R.id.maKhoa);
+            holder.tvSDT = convertView.findViewById(R.id.sdtKhoa);
             convertView.setTag(holder);
         } else {
-            holder = (SinhVienViewHolder) convertView.getTag();
+            holder = (ViewHolder) convertView.getTag();
         }
 
-        SinhVien sinhVien = danhSachSinhVien.get(position);
-
-        holder.tvHoTen.setText(sinhVien.getHoTen() != null ? sinhVien.getHoTen() : "");
-        holder.tvMaSV.setText(sinhVien.getMaSV() != null ? sinhVien.getMaSV() : "");
-        holder.tvSDT.setText(sinhVien.getSoDienThoai() != null ? sinhVien.getSoDienThoai() : "");
+        cr424s.dangmaihuyentrang.studentmanager.SinhVien sv = displayList.get(position);
+        holder.tvHoTen.setText(sv.getHoTen());
+        holder.tvMaSV.setText(sv.getMaSV());
+        holder.tvSDT.setText(sv.getSdt());
 
         return convertView;
     }
 
-    // Optional: cập nhật dữ liệu
-    public void updateData(List<SinhVien> newList) {
-        danhSachSinhVien.clear();
-        danhSachSinhVien.addAll(newList);
+    // Filter
+    public void filter(String keyword) {
+        displayList.clear();
+
+        if (keyword.isEmpty()) {
+            displayList.addAll(fullList);
+        } else {
+            keyword = keyword.toLowerCase();
+            for (cr424s.dangmaihuyentrang.studentmanager.SinhVien sv : fullList) {
+                if (sv.getMaSV().toLowerCase().contains(keyword)
+                        || sv.getHoTen().toLowerCase().contains(keyword)) {
+                    displayList.add(sv);
+                }
+            }
+        }
+
         notifyDataSetChanged();
     }
 
-    private static class SinhVienViewHolder {
-        TextView tvHoTen;
-        TextView tvMaSV;
-        TextView tvSDT;
+    public void refresh() {
+        displayList.clear();
+        displayList.addAll(fullList);
+        notifyDataSetChanged();
     }
 }

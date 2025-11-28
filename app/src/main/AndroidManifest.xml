@@ -12,6 +12,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StudentManager">
         <activity
+            android:name=".DepartmantInfo"
+            android:exported="false" />
+        <activity
+            android:name=".ListDepartment"
+            android:exported="false" />
+        <activity
+            android:name=".AddDepartment"
+            android:exported="false" />
+        <activity
+            android:name=".List_Department"
+            android:exported="false" />
+        <activity
             android:name=".GiaoDien"
             android:exported="true">
             <intent-filter>
@@ -20,7 +32,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".StudentInfoActivity"
             android:exported="false" />
@@ -29,9 +40,7 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="false">
-
-        </activity>
+            android:exported="false" />
     </application>
 
 </manifest>

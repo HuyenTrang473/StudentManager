@@ -6,42 +6,44 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".AddStudentActivity">
+    tools:context=".StudentInfoActivity">
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="match_parent"
-        android:layout_height="37dp"
-        android:text="Thông Tin Sinh Viên"
-        android:textStyle="bold"
-        app:menu="@menu/menu"/>
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Nhập Thông Tin Sinh Viên"
+        android:textColor="#673AB7"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <EditText
-        android:id="@+id/edtHoTen"
+        android:id="@+id/hoten"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="Họ và tên sinh viên"
+        android:hint="Họ và Tên"
         android:inputType="text" />
 
     <EditText
-        android:id="@+id/edtMaSV"
+        android:id="@+id/masv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="Mã sinh viên"
+        android:hint="Mã Sinh Viên"
         android:inputType="text" />
 
     <EditText
-        android:id="@+id/edtSDT"
+        android:id="@+id/sdt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="Số điện thoại"
-        android:inputType="text" />
+        android:hint="Số Điện Thoại"
+        android:inputType="numberSigned" />
 
     <EditText
-        android:id="@+id/edtEmail"
+        android:id="@+id/email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -49,80 +51,64 @@
         android:inputType="text" />
 
     <EditText
-        android:id="@+id/edtNgaySinh"
+        android:id="@+id/ngaysinh"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="Ngày tháng năm sinh"
-        android:inputType="text" />
+        android:hint="Ngày Tháng Năm Sinh"
+        android:inputType="date" />
 
     <Spinner
-        android:id="@+id/spinner2"
+        android:id="@+id/khoa"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <LinearLayout
+    <RadioGroup
         android:layout_width="match_parent"
-        android:layout_height="93dp"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content">
 
-        <RadioGroup
-            android:id="@+id/rgGioiTinh"
+        <RadioButton
+            android:id="@+id/nam"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:text="Nam" />
 
-            <RadioButton
-                android:id="@+id/rdNam"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Nam" />
-
-            <RadioButton
-                android:id="@+id/rdNu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Nữ" />
-        </RadioGroup>
-    </LinearLayout>
+        <RadioButton
+            android:id="@+id/nu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nữ" />
+    </RadioGroup>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="horizontal">
 
         <CheckBox
-            android:id="@+id/checkNhac"
+            android:id="@+id/amnhac"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Âm nhạc" />
+            android:text="Âm Nhạc" />
 
         <CheckBox
-            android:id="@+id/checkDoc"
+            android:id="@+id/docsach"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Đọc sách" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+            android:text="Đọc Sách" />
 
         <CheckBox
-            android:id="@+id/checkTheThao"
+            android:id="@+id/thethao"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Thể thao" />
+            android:text="Thể Thao" />
 
         <CheckBox
-            android:id="@+id/checkXem"
+            android:id="@+id/choigame"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Xem phim" />
+            android:text="Chơi Game" />
     </LinearLayout>
 
     <LinearLayout
@@ -131,18 +117,18 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/btnUpdate"
+            android:id="@+id/btnCapNhat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Cập Nhật" />
+            android:text="Cập nhật" />
 
         <Button
-            android:id="@+id/btnDelete"
+            android:id="@+id/btnXoa"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Xóa Sinh Viên" />
+            android:text="Xoá" />
     </LinearLayout>
 
 </LinearLayout>

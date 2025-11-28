@@ -3,8 +3,15 @@ package cr424s.dangmaihuyentrang.studentmanager;
 import java.io.Serializable;
 
 public class Department implements Serializable {
-    String maKhoa,tenKhoa, diaChi,sdt;
 
+    private String maKhoa;
+    private String tenKhoa;
+    private String diaChi;
+    private String sdt;
+
+
+    public Department() {
+    }
 
     public Department(String maKhoa, String tenKhoa, String diaChi, String sdt) {
         this.maKhoa = maKhoa;
@@ -44,17 +51,13 @@ public class Department implements Serializable {
     public void setSdt(String sdt) {
         this.sdt = sdt;
     }
-
     @Override
     public String toString() {
         return "Department{" +
                 "maKhoa='" + maKhoa + '\'' +
                 ", tenKhoa='" + tenKhoa + '\'' +
                 ", diaChi='" + diaChi + '\'' +
-                ", sdt=" + sdt +
+                ", sdt='" + sdt + '\'' +
                 '}';
     }
 }
-
-
-

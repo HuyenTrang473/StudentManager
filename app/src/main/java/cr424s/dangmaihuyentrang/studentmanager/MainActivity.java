@@ -135,7 +135,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
     // Thêm dữ liệu mặc định vào DB
     private void khoiTaoDuLieu() {
         SinhVien[] defaultSVs = new SinhVien[]{

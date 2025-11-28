@@ -16,7 +16,6 @@ import cr424s.dangmaihuyentrang.studentmanager.SinhVien;
 
 public class SinhVienDB extends SQLiteOpenHelper {
 
-    // Bảng Khoa
     String khoaTable = "CREATE TABLE Khoa (\n" +
             "    maKhoa TEXT PRIMARY KEY,\n" +
             "    tenKhoa TEXT NOT NULL,\n" +
@@ -76,14 +75,26 @@ public class SinhVienDB extends SQLiteOpenHelper {
         return i;
     }
 
-    // Sửa thông tin Khoa
-    public void suaKhoa(Department department) {
+    // Cập nhật khoa (tất cả thông tin)
+    public long capNhatKhoa(Department dept) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put("soDienThoaiKhoa", department.getSdt());
-        db.update("Khoa", values, "maKhoa = ?", new String[]{department.getMaKhoa()});
+        values.put("tenKhoa", dept.getTenKhoa());
+        values.put("diaChiKhoa", dept.getDiaChi());
+        values.put("soDienThoaiKhoa", dept.getSdt());
+        int row = db.update("Khoa", values, "maKhoa=?", new String[]{dept.getMaKhoa()});
         db.close();
+        return row;  // trả về số dòng bị ảnh hưởng
     }
+
+    // Xóa khoa theo mã
+    public boolean xoaKhoa(String maKhoa) {
+        SQLiteDatabase db = getWritableDatabase();
+        int rowsDeleted = db.delete("Khoa", "maKhoa=?", new String[]{maKhoa});
+        db.close();
+        return rowsDeleted > 0;
+    }
+
 
     // Lấy tất cả Khoa
     public List<Department> getAllKhoa() {

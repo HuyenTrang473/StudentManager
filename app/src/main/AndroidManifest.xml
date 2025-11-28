@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StudentManager">
         <activity
-            android:name=".DepartmantInfo"
+            android:name=".DepartmentInfo"
             android:exported="false" />
         <activity
             android:name=".ListDepartment"
